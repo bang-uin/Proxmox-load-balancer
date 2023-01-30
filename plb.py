@@ -32,6 +32,7 @@ THRESHOLD = cfg["parameters"]["threshold"] / 100
 LXC_MIGRATION = cfg["parameters"]["lxc_migration"]
 MIGRATION_TIMEOUT = cfg["parameters"]["migration_timeout"]
 ONLY_ON_MASTER = cfg["parameters"].get("only_on_master", False)
+DRY_RUN = cfg["parameters"].get("dry_run", False)
 
 """Exclusions"""
 excluded_vms = []
@@ -382,6 +383,8 @@ def vm_migration(variants: list, cluster_obj: object) -> None:
         if local_disk or local_resources:
             logger.debug(f'The VM:{vm} has {local_disk if local_disk else local_resources if local_resources else ""}')
             continue  # for variant in variants:
+        elif DRY_RUN:
+            continue
         else:
             # request migration
             job = requests.post(url, cookies=payload, headers=header, data=options, verify=False)
